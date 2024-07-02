@@ -130,19 +130,6 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
             </View>
           ))}
         </View>
-
-        {/* <View style={styles.talentsContainer}>
-          {pokemonDetail.moves.slice(0, 2).map((move: any) => (
-            <View key={move.move.name} style={styles.talent}>
-              <Text style={styles.talentName}>Talent :{move.move.name}</Text>
-              {move.move.url && (
-                <>
-                  <FetchTalentDescription url={move.move.url} />
-                </>
-              )}
-            </View>
-          ))}
-        </View> */}
         <View style={styles.weakResContainer}>
           <Text style={styles.subTitle}>Faiblesse</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
