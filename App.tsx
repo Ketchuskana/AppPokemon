@@ -1,20 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import PokemonList from './screens/PokemonList';
+import PokemonDetail from './screens/PokemonDetail';
 
-export default function App() {
+const App: React.FC = () => {
+  const [selectedPokemon, setSelectedPokemon] = useState<string | null>(null);
+
+  const handlePokemonClick = (pokemonName: string) => {
+    setSelectedPokemon(pokemonName);
+  };
+
+  const handleBack = () => {
+    setSelectedPokemon(null);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={{ flex: 1 }}>
+      {selectedPokemon ? (
+        <PokemonDetail pokemonName={selectedPokemon} onBack={handleBack} />
+      ) : (
+        <PokemonList onPokemonClick={handlePokemonClick} />
+      )}
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
