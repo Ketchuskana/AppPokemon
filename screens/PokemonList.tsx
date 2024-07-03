@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import styles from '../components/StyleList'; 
 
 type PokemonListProps = {
   onPokemonClick: (pokemonName: string) => void;
@@ -25,7 +26,7 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Pokémons près de vous</Text>
+      <Text style={styles.header}>Pokemons List</Text>
       <FlatList
         data={pokemonList}
         keyExtractor={item => item.name}
@@ -35,38 +36,5 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-    padding: 20,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  list: {
-    alignItems: 'center',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    marginVertical: 10,
-    width: '90%',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
 
 export default PokemonList;
