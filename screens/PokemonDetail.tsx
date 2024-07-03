@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import FetchTalentDescription from '../components/FetchTalentDescription';
-
+import styles from '../components/StyleDetail';
 
 type PokemonDetailProps = {
   pokemonName: string;
@@ -97,8 +97,7 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
           <Text style={styles.hp}>PV {pokemonDetail.stats.find((stat: any) => stat.stat.name === 'hp').base_stat}</Text>
         </View>
         <View style={styles.imageContainer}>
-        <Text style={styles.imageInfo}>Niveau: {pokemonDetail.base_experience} Evolution: {pokemonDetail.species.name}</Text>
-
+          <Text style={styles.imageInfo}>Niveau: {pokemonDetail.base_experience} Evolution: {pokemonDetail.species.name}</Text>
           <Image
             source={{ uri: pokemonDetail.sprites.front_default }}
             style={styles.image}
@@ -131,13 +130,13 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
           ))}
         </View>
         <View style={styles.weakResContainer}>
-          <Text style={styles.subTitle}>Faiblesse</Text>
+          <Text style={styles.subTitle}>Weakness</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {weaknesses.map((weakness: string, index: number) => (
               <Image key={index} source={typeIcons[weakness]} style={styles.weakResIcon} />
             ))}
           </View>
-          <Text style={styles.subTitle}>Résistance</Text>
+          <Text style={styles.subTitle}>Resistance</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {resistances.map((resistance: string, index: number) => (
               <Image key={index} source={typeIcons[resistance]} style={styles.weakResIcon} />
@@ -151,126 +150,5 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f0f0f0',
-  },
-  card: {
-    width: '90%',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    borderColor: '#643127',
-    borderWidth: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 10,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  hp: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  imageContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  image: {
-    width: 150,
-    height: 150,
-    marginBottom: 10,
-  },
-  imageInfo: {
-    fontSize: 10,
-    color: 'grey',
-  },
-  typesContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  typeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    margin: 5,
-    padding: 5,
-    borderWidth: 1,
-    borderColor: 'white',
-    borderRadius: 5,
-  },
-  typeIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 5,
-  },
-  typeText: {
-    fontSize: 16,
-    color: 'white',
-  },
-  talentsContainer: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  talentDescriptionContainer: {
-    maxWidth: 50,  
-    overflow: 'hidden',
-  },
-  talent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },  
-  talentName: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  talentHeader: {
-    marginBottom: 5,   // Espacement sous le titre du talent
-  },
-  weakResContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  subTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  weakResIcon: {
-    width: 20,
-    height: 20,
-    margin: 5,
-  },
-  backButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#3498db',
-    borderRadius: 5,
-  },
-  backButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
 
 export default PokemonDetail;
