@@ -1,5 +1,28 @@
 import { StyleSheet } from 'react-native';
 
+const typeColors = {
+  fire: '#FFA726',
+  grass: '#66BB6A',
+  water: '#42A5F5',
+  normal: '#A8A77A',
+  bug: '#A6B91A',
+  flying: '#A98FF3',
+  rock: '#B6A136',
+  electric: '#F8D030',
+  poison: '#A33EA1',
+  ground: '#E2BF65',
+  fighting: '#C22E28',
+  psychic: '#F95587',
+  steel: '#B7B7CE',
+  ice: '#96D9D6',
+  ghost: '#735797',
+  dragon: '#6F35FC',
+  dark: '#705746',
+  fairy: '#D685AD',
+  shadow: '#5A5A5A',
+  unknown: '#BDBDBD',
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -59,6 +82,42 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 10,
+  },
+  filtersContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  sortButton: {
+    backgroundColor: '#FFCC80',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  sortButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  // picker: {
+  //   width: 150,
+  //   height: 40,
+  //   borderWidth: 1,
+  //   borderColor: '#CCCCCC',
+  //   borderRadius: 8,
+  // },
 });
 
 export default styles;
