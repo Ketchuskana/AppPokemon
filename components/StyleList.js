@@ -65,20 +65,20 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 10,
   },
-  filtersContainer: {
+  navigationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
   },
-  sortButton: {
+  navigationButton: {
     backgroundColor: '#FFCC80',
     paddingVertical: 5,
     paddingHorizontal: 12,
     borderRadius: 8,
   },
-  sortButtonText: {
+  navigationButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333333',
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginTop: 4,
   },
+
 
 });
 

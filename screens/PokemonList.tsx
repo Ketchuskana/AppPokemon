@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
 import styles, { getDynamicStyles } from '../components/StyleList';
 import { typeColors } from '../components/pokemonTypes';
+import useSWR from 'swr';
 
 // Définition des types pour les props et les données Pokémon
 type PokemonListProps = {
@@ -26,44 +27,64 @@ type PokemonDetails = {
   types: PokemonType[];
 };
 
+const apiBaseUrl = 'https://pokeapi.co/api/v2/pokemon';
+
+const fetcher = async (url) => {
+  const response = await fetch(url);
+  return response.json();
+};
+
 const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [pokemonDetails] = useState<Record<string, PokemonDetails>>({});
-  const [loading, setLoading] = useState(true);
+  const [pokemonDetails, setPokemonDetails] = useState<Record<string, PokemonDetails>>({});
+  const [offset, setOffset] = useState(0);
+  const limit = 21;
 
-  // Appel de la fonction pour récupérer la liste des Pokémon au montage de la composante
+  // URL de l'API avec pagination
+  const getPokemonListUrl = (offset: number) => `${apiBaseUrl}?limit=${limit}&offset=${offset}`;
+
+  // Utilisation de SWR pour gérer la récupération des données avec pagination
+  const { data, error, isValidating, mutate } = useSWR(getPokemonListUrl(offset), fetcher);
+
   useEffect(() => {
-    fetchPokemonList();
-  }, []);
-
-  // Tri de la liste des Pokémon lorsque l'ordre de tri change
-  useEffect(() => {
-    sortPokemonList();
-  }, [sortOrder, pokemonDetails]);
-
-
-  // Fonction asynchrone pour récupérer la liste des Pokémon depuis l'API
-  const fetchPokemonList = async () => {
-    try {
-      const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1000');
-      const data = await response.json();
-      setPokemonList(data.results);
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to fetch pokemon list:', error);
-      setLoading(false);
+    if (data) {
+      const newDetails = { ...pokemonDetails };
+      data.results.forEach(pokemon => {
+        newDetails[pokemon.name] = pokemon;
+      });
+      setPokemonDetails(newDetails);
     }
+  }, [data]);
+
+  const pokemonList = data?.results || [];
+
+  // Fonction pour charger la page suivante
+  const loadNextPage = () => {
+    if (data?.next) {
+      setOffset(prevOffset => prevOffset + limit);
+    }
+  };
+
+  // Fonction pour charger la page précédente
+  const loadPreviousPage = () => {
+    if (offset > 0) {
+      setOffset(prevOffset => prevOffset - limit);
+    }
+  };
+
+  const filterPokemonList = (pokemonList) => {
+    return pokemonList.filter(pokemon =>
+      pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   };
 
   // Fonction pour afficher chaque élément de la liste des Pokémon
   const renderItem = ({ item }: { item: Pokemon }) => {
     const details = pokemonDetails[item.name];
-    const dynamicStyles = details ? getDynamicStyles(details.types.map(type => ({ color: typeColors[type.type.name] }))) : styles;
 
     return (
-      <TouchableOpacity onPress={() => onPokemonClick(item.name)} style={dynamicStyles.card}>
+      <TouchableOpacity onPress={() => onPokemonClick(item.name)} style={styles.card}>
         <Image source={{ uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${getPokemonId(item.url)}.png` }} style={styles.pokemonImage} />
         <Text style={styles.cardTitle}>{capitalizeFirstLetter(item.name)}</Text>
       </TouchableOpacity>
@@ -81,31 +102,8 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
     return id;
   };
 
-  // Fonction pour trier la liste des Pokémon en fonction de l'ordre choisi
-  const sortPokemonList = () => {
-    const sortedList = [...pokemonList].sort((a, b) => {
-      if (sortOrder === 'asc') {
-        return a.name.localeCompare(b.name);
-      } else {
-        return b.name.localeCompare(a.name);
-      }
-    });
-    setPokemonList(sortedList);
-  };
-
-  const handleSortAZ = () => {
-    setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
-  };
-
-  // Fonction pour filtrer la liste des Pokémon en fonction de la chaîne de recherche
-  const filterPokemonList = () => {
-    return pokemonList.filter(pokemon =>
-      pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
-
   // Affiche un indicateur de chargement pendant le chargement des données
-  if (loading) {
+  if (!data && isValidating) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -129,19 +127,25 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
         />
       </View>
 
-      <View style={styles.filtersContainer}>
-      <Text style={styles.sortButtonText2}>Trier par : </Text>
-        <TouchableOpacity onPress={handleSortAZ} style={styles.sortButton}>
-          <Text style={styles.sortButtonText}>Ordre alphabétique</Text>
-        </TouchableOpacity>
-      </View>
-
       <FlatList
-        data={filterPokemonList()}
+        data={filterPokemonList(pokemonList)}
         keyExtractor={item => item.name}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
+        ListFooterComponent={() => (
+          isValidating && <ActivityIndicator size="small" color="#0000ff" />
+        )}
       />
+
+      {/* Boutons de navigation */}
+      <View style={styles.navigationContainer}>
+        <TouchableOpacity onPress={loadPreviousPage} style={styles.navigationButton}>
+          <Text style={styles.navigationButtonText}>Page précédente</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={loadNextPage} style={styles.navigationButton}>
+          <Text style={styles.navigationButtonText}>Page suivante</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
