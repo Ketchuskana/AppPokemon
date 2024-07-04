@@ -1,28 +1,5 @@
 import { StyleSheet } from 'react-native';
 
-const typeColors = {
-  fire: '#FFA726',
-  grass: '#66BB6A',
-  water: '#42A5F5',
-  normal: '#A8A77A',
-  bug: '#A6B91A',
-  flying: '#A98FF3',
-  rock: '#B6A136',
-  electric: '#F8D030',
-  poison: '#A33EA1',
-  ground: '#E2BF65',
-  fighting: '#C22E28',
-  psychic: '#F95587',
-  steel: '#B7B7CE',
-  ice: '#96D9D6',
-  ghost: '#735797',
-  dragon: '#6F35FC',
-  dark: '#705746',
-  fairy: '#D685AD',
-  shadow: '#5A5A5A',
-  unknown: '#BDBDBD',
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -70,7 +47,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     backgroundColor: '#fff',
-    borderRadius: 30,
+    borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -90,8 +67,7 @@ const styles = StyleSheet.create({
   },
   filtersContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
@@ -107,17 +83,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333333',
   },
-  filterContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  // picker: {
-  //   width: 150,
-  //   height: 40,
-  //   borderWidth: 1,
-  //   borderColor: '#CCCCCC',
-  //   borderRadius: 8,
-  // },
+
 });
 
+export const getDynamicStyles = (types) => {
+  const borderColor = types[0].color;
+
+  return StyleSheet.create({
+    card: {
+      ...styles.card,
+      borderColor: borderColor,
+    },
+  });
+};
 export default styles;
