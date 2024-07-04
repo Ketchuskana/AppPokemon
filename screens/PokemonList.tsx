@@ -1,88 +1,119 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, TextInput, Image } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import styles from '../components/StyleList';
+import { View, Text, FlatList, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
+import styles, { getDynamicStyles } from '../components/StyleList';
 import { typeColors } from '../components/pokemonTypes';
 
+// Définition des types pour les props et les données Pokémon
 type PokemonListProps = {
   onPokemonClick: (pokemonName: string) => void;
 };
 
-const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
-  const [pokemonList, setPokemonList] = useState<{ name: string, url: string }[]>([]);
-  const [filteredPokemonList, setFilteredPokemonList] = useState<{ name: string, url: string }[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // État pour le tri
-  const [selectedType, setSelectedType] = useState<string | null>(null); // État pour le type sélectionné
+type Pokemon = {
+  name: string;
+  url: string;
+};
 
+type PokemonType = {
+  slot: number;
+  type: {
+    name: string;
+  };
+};
+
+type PokemonDetails = {
+  id: number;
+  name: string;
+  types: PokemonType[];
+};
+
+const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
+  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [pokemonDetails] = useState<Record<string, PokemonDetails>>({});
+  const [loading, setLoading] = useState(true);
+
+  // Appel de la fonction pour récupérer la liste des Pokémon au montage de la composante
   useEffect(() => {
-    fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')
-      .then(response => response.json())
-      .then(data => {
-        setPokemonList(data.results);
-        setFilteredPokemonList(data.results);
-      })
-      .catch(error => console.error(error));
+    fetchPokemonList();
   }, []);
 
-  const renderItem = ({ item }: { item: { name: string, url: string } }) => (
-    <TouchableOpacity onPress={() => onPokemonClick(item.name)} style={[styles.card, { borderColor: typeColors[item.name.toLowerCase()] || '#BDBDBD' }]}>
-      <Image source={{ uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${getPokemonId(item.url)}.png` }} style={styles.pokemonImage} />
-      <Text style={styles.cardTitle}>{capitalizeFirstLetter(item.name)}</Text>
-    </TouchableOpacity>
-  );
+  // Tri de la liste des Pokémon lorsque l'ordre de tri change
+  useEffect(() => {
+    sortPokemonList();
+  }, [sortOrder, pokemonDetails]);
 
+
+  // Fonction asynchrone pour récupérer la liste des Pokémon depuis l'API
+  const fetchPokemonList = async () => {
+    try {
+      const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1000');
+      const data = await response.json();
+      setPokemonList(data.results);
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to fetch pokemon list:', error);
+      setLoading(false);
+    }
+  };
+
+  // Fonction pour afficher chaque élément de la liste des Pokémon
+  const renderItem = ({ item }: { item: Pokemon }) => {
+    const details = pokemonDetails[item.name];
+    const dynamicStyles = details ? getDynamicStyles(details.types.map(type => ({ color: typeColors[type.type.name] }))) : styles;
+
+    return (
+      <TouchableOpacity onPress={() => onPokemonClick(item.name)} style={dynamicStyles.card}>
+        <Image source={{ uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${getPokemonId(item.url)}.png` }} style={styles.pokemonImage} />
+        <Text style={styles.cardTitle}>{capitalizeFirstLetter(item.name)}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  // Fonction pour mettre en majuscule la première lettre d'un nom
   const capitalizeFirstLetter = (name: string) => {
     return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
+  // Fonction pour extraire l'ID d'un Pokémon à partir de son URL
   const getPokemonId = (url: string) => {
     const id = url.split('/')[6];
     return id;
   };
 
-  useEffect(() => {
-    filterPokemonList();
-  }, [searchQuery, selectedType]);
-
-  useEffect(() => {
-    sortPokemonList();
-  }, [sortOrder]);
-
+  // Fonction pour trier la liste des Pokémon en fonction de l'ordre choisi
   const sortPokemonList = () => {
-    const sortedList = [...filteredPokemonList].sort((a, b) => {
+    const sortedList = [...pokemonList].sort((a, b) => {
       if (sortOrder === 'asc') {
         return a.name.localeCompare(b.name);
       } else {
         return b.name.localeCompare(a.name);
       }
     });
-    setFilteredPokemonList(sortedList);
+    setPokemonList(sortedList);
   };
 
   const handleSortAZ = () => {
-    if (sortOrder === 'asc') {
-      setSortOrder('desc');
-    } else {
-      setSortOrder('asc');
-    }
+    setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
   };
 
+  // Fonction pour filtrer la liste des Pokémon en fonction de la chaîne de recherche
   const filterPokemonList = () => {
-    let filteredList = pokemonList.filter(pokemon =>
+    return pokemonList.filter(pokemon =>
       pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-    if (selectedType) {
-      filteredList = filteredList.filter(pokemon =>
-        // Logique pour vérifier si le Pokémon appartient au type sélectionné
-        pokemon.name.toLowerCase().includes(selectedType.toLowerCase())
-      );
-    }
-
-    setFilteredPokemonList(filteredList);
   };
 
+  // Affiche un indicateur de chargement pendant le chargement des données
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  // Affichage principal de la liste des Pokémon une fois que les données sont chargées avec succès
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -102,39 +133,10 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
         <TouchableOpacity onPress={handleSortAZ} style={styles.sortButton}>
           <Text style={styles.sortButtonText}>Trier par A-Z</Text>
         </TouchableOpacity>
-        {/* Logique de filtrage par type non terminé */}
-        {/* <View style={styles.filterContainer}>
-          <Picker
-            selectedValue={selectedType}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedType(itemValue)}>
-            <Picker.Item label="Types" value={null} />
-            <Picker.Item label="Grass" value="grass" />
-            <Picker.Item label="Fire" value="fire" />
-            <Picker.Item label="Water" value="water" />
-            <Picker.Item label="Normal" value="normal" />
-            <Picker.Item label="Bug" value="bug" />
-            <Picker.Item label="Flying" value="flying" />
-            <Picker.Item label="Rock" value="rock" />
-            <Picker.Item label="Electric" value="electric" />
-            <Picker.Item label="Poison" value="poison" />
-            <Picker.Item label="Ground" value="ground" />
-            <Picker.Item label="Fighting" value="fighting" />
-            <Picker.Item label="Psychic" value="psychic" />
-            <Picker.Item label="Steel" value="steel" />
-            <Picker.Item label="Ice" value="ice" />
-            <Picker.Item label="Ghost" value="ghost" />
-            <Picker.Item label="Dragon" value="dragon" />
-            <Picker.Item label="Dark" value="dark" />
-            <Picker.Item label="Fairy" value="fairy" />
-            <Picker.Item label="Shadow" value="shadow" />
-            <Picker.Item label="Unknown" value="unknown" />
-          </Picker>
-        </View> */}
       </View>
 
       <FlatList
-        data={filteredPokemonList}
+        data={filterPokemonList()}
         keyExtractor={item => item.name}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
