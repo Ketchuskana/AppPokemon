@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import FetchTalentDescription from '../components/FetchTalentDescription';
 import styles, { getDynamicStyles } from '../components/StyleDetail';
 
@@ -8,17 +8,27 @@ type PokemonDetailProps = {
   onBack: () => void;
 };
 
-const typeColors: { [key: string]: string } = {
+export const typeColors: { [key: string]: string } = {
   fire: '#FFA726',
   grass: '#66BB6A',
   water: '#42A5F5',
-  normal: '#212121',
-  bug: '#AB47BC',
-  flying: '#E3F2FD',
-  rock: '#795548',
-  electric: '#FFEB3B',
-  poison: '#9C27B0',
-  default: '#BDBDBD',
+  normal: '#A8A77A',
+  bug: '#A6B91A',
+  flying: '#A98FF3',
+  rock: '#B6A136',
+  electric: '#F8D030',
+  poison: '#A33EA1',
+  ground: '#E2BF65',
+  fighting: '#C22E28',
+  psychic: '#F95587',
+  steel: '#B7B7CE',
+  ice: '#96D9D6',
+  ghost: '#735797',
+  dragon: '#6F35FC',
+  dark: '#705746',
+  fairy: '#D685AD',
+  shadow: '#5A5A5A',
+  unknown: '#BDBDBD',
 };
 
 const typeIcons: { [key: string]: any } = {
@@ -31,28 +41,25 @@ const typeIcons: { [key: string]: any } = {
   rock: require('../assets/image/pierre.png'),
   electric: require('../assets/image/éclaire.png'),
   poison: require('../assets/image/poison.png'),
-};
-
-const typeWeaknesses: { [key: string]: string[] } = {
-  fire: ['water'],
-  grass: ['fire', 'bug'],
-  water: ['grass', 'electric'],
-  normal: ['fighting'],
-  bug: ['fire', 'flying', 'rock'],
-};
-
-const typeResistances: { [key: string]: string[] } = {
-  fire: ['fire', 'grass', 'bug'],
-  grass: ['water', 'grass', 'electric'],
-  water: ['fire', 'water', 'ice'],
-  normal: [],
-  bug: ['grass', 'fighting', 'ground'],
+  ground: require('../assets/image/soil.png'),
+  fighting: require('../assets/image/fighting.png'),
+  psychic: require('../assets/image/psychic.png'),
+  steel: require('../assets/image/steel.png'),
+  ice: require('../assets/image/ice.png'),
+  ghost: require('../assets/image/ghost.png'),
+  dragon: require('../assets/image/dragon.png'),
+  dark: require('../assets/image/dark.png'),
+  fairy: require('../assets/image/fairy.png'),
+  // shadow: require('../assets/image/shadow.png'),
+  // unknown: require('../assets/image/unknown.png'),
 };
 
 const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) => {
   const [pokemonDetail, setPokemonDetail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [evolutionChain, setEvolutionChain] = useState<string[]>([]);
+  const [weaknesses, setWeaknesses] = useState<string[]>([]);
 
   useEffect(() => {
     fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
@@ -64,14 +71,71 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
       })
       .then(data => {
         setPokemonDetail(data);
-        setLoading(false);
+        const speciesUrl = data.species.url;
+        fetch(speciesUrl)
+          .then(response => response.json())
+          .then(speciesData => {
+            const evolutionChainUrl = speciesData.evolution_chain.url;
+            fetch(evolutionChainUrl)
+              .then(response => response.json())
+              .then(evolutionChainData => {
+                const chain = parseEvolutionChain(evolutionChainData.chain, pokemonName);
+                setEvolutionChain(chain);
+                setLoading(false);
+              })
+              .catch(error => {
+                console.error('Failed to fetch evolution chain', error);
+                setError('Failed to load evolution chain');
+                setLoading(false);
+              });
+          })
+          .catch(error => {
+            console.error('Failed to fetch species details', error);
+            setError('Failed to load species details');
+            setLoading(false);
+          });
+
+        const typesUrls = data.types.map((type: any) => type.type.url);
+        Promise.all(typesUrls.map(url => fetch(url).then(response => response.json())))
+          .then(typesData => {
+            const weaknesses = typesData.flatMap((typeData: any) => {
+              return typeData.damage_relations.double_damage_from.map((weakness: any) => weakness.name);
+            });
+            setWeaknesses(weaknesses);
+          })
+          .catch(error => {
+            console.error('Failed to fetch weaknesses', error);
+            setError('Failed to load weaknesses');
+          });
       })
       .catch(error => {
-        console.error(error);
+        console.error('Failed to fetch Pokemon details', error);
         setError('Failed to load Pokemon details');
         setLoading(false);
       });
   }, [pokemonName]);
+
+  const parseEvolutionChain = (chain: any, currentPokemonName: string): string[] => {
+    const result: string[] = [];
+    traverseChain(chain, currentPokemonName, result);
+    return result;
+  };
+
+  const traverseChain = (chain: any, currentPokemonName: string, result: string[]) => {
+    if (!chain) return;
+    if (chain.species.name === currentPokemonName) {
+      const evolvesTo = chain.evolves_to;
+      evolvesTo.forEach((evolution: any) => {
+        result.push(evolution.species.name);
+        traverseChain(evolution, currentPokemonName, result);
+      });
+    } else {
+      const evolvesTo = chain.evolves_to;
+      evolvesTo.forEach((evolution: any) => {
+        traverseChain(evolution, currentPokemonName, result);
+      });
+    }
+  };
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -81,17 +145,9 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
     return <Text>Error: {error}</Text>;
   }
 
-  const weaknesses = pokemonDetail.types
-    .map((type: any) => typeWeaknesses[type.type.name] || [])
-    .flat();
-
-  const resistances = pokemonDetail.types
-    .map((type: any) => typeResistances[type.type.name] || [])
-    .flat();
-
   const dynamicStyles = getDynamicStyles(pokemonDetail.types.map((type: any) => ({
     name: type.type.name,
-    color: typeColors[type.type.name] || typeColors.default,
+    color: typeColors[type.type.name] || typeColors.unknown,
   })));
 
   return (
@@ -102,13 +158,24 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
           <Text style={styles.hp}>PV {pokemonDetail.stats.find((stat: any) => stat.stat.name === 'hp').base_stat}</Text>
         </View>
         <View style={styles.imageContainer}>
-          <Text style={styles.imageInfo}>Niveau: {pokemonDetail.base_experience} Evolution: {pokemonDetail.species.name}</Text>
+          <Text style={styles.imageInfo}>Niveau: <Text style={styles.imageInfo}>{pokemonDetail.base_experience}</Text></Text>
+          <Text style={styles.imageInfo}>Evolution: </Text>
+          {evolutionChain.length > 0 ? (
+            <Text style={styles.imageInfo}>
+              {evolutionChain.map((evolutionName, index) => (
+                <Text key={index}>{evolutionName}</Text>
+              ))}
+            </Text>
+          ) : (
+            <Text style={styles.imageInfo}>No further evolutions</Text>
+          )}
           <Image
             source={{ uri: pokemonDetail.sprites.front_default }}
             style={styles.image}
           />
           <Text style={styles.imageInfo}>Taille: {pokemonDetail.height / 10} m Poids: {pokemonDetail.weight / 10} kg</Text>
         </View>
+
         <View style={styles.typesContainer}>
           {pokemonDetail.types.map((type: any) => (
             <View key={type.type.name} style={[styles.typeContainer, { backgroundColor: typeColors[type.type.name] }]}>
@@ -124,7 +191,7 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
           {pokemonDetail.moves.slice(0, 2).map((move: any) => (
             <View key={move.move.name} style={styles.talent}>
               <View style={styles.talentHeader}>
-                <Text style={styles.talentName}>Talent: {move.move.name}</Text>
+                <Text style={styles.talentName}>{move.move.name}</Text>
               </View>
               {move.move.url && (
                 <View style={styles.talentDescriptionContainer}>
@@ -139,12 +206,6 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {weaknesses.map((weakness: string, index: number) => (
               <Image key={index} source={typeIcons[weakness]} style={styles.weakResIcon} />
-            ))}
-          </View>
-          <Text style={styles.subTitle}>Resistance</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {resistances.map((resistance: string, index: number) => (
-              <Image key={index} source={typeIcons[resistance]} style={styles.weakResIcon} />
             ))}
           </View>
         </View>
