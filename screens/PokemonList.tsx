@@ -10,7 +10,7 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
   const [pokemonList, setPokemonList] = useState<{ name: string, url: string }[]>([]);
 
   useEffect(() => {
-    fetch('https://pokeapi.co/api/v2/pokemon?limit=20')
+    fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')
       .then(response => response.json())
       .then(data => {
         setPokemonList(data.results);

@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     // Pour Android
-    elevation: 15, 
+    elevation: 20, 
     // Pour iOS
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 }, 
