@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import FetchTalentDescription from '../components/FetchTalentDescription';
-import styles from '../components/StyleDetail';
+import styles, { getDynamicStyles } from '../components/StyleDetail';
 
 type PokemonDetailProps = {
   pokemonName: string;
@@ -34,8 +34,8 @@ const typeIcons: { [key: string]: any } = {
 };
 
 const typeWeaknesses: { [key: string]: string[] } = {
-  fire: ['water', 'rock', 'fire'],
-  grass: ['fire', 'bug', 'flying'],
+  fire: ['water'],
+  grass: ['fire', 'bug'],
   water: ['grass', 'electric'],
   normal: ['fighting'],
   bug: ['fire', 'flying', 'rock'],
@@ -89,9 +89,14 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
     .map((type: any) => typeResistances[type.type.name] || [])
     .flat();
 
+  const dynamicStyles = getDynamicStyles(pokemonDetail.types.map((type: any) => ({
+    name: type.type.name,
+    color: typeColors[type.type.name] || typeColors.default,
+  })));
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.card}>
+      <View style={[styles.card, dynamicStyles.card]}>
         <View style={styles.header}>
           <Text style={styles.name}>{pokemonDetail.name.charAt(0).toUpperCase() + pokemonDetail.name.slice(1)}</Text>
           <Text style={styles.hp}>PV {pokemonDetail.stats.find((stat: any) => stat.stat.name === 'hp').base_stat}</Text>

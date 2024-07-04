@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#F0F0F0', 
   },
   card: {
     width: '90%',
@@ -14,12 +14,13 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     backgroundColor: 'white',
+    // Pour Android
+    elevation: 15, 
+    // Pour iOS
     shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    borderColor: '#643127',
-    borderWidth: 1,
+    shadowOffset: { width: 0, height: 10 }, 
+    shadowOpacity: 0.8, 
+    shadowRadius: 20,
   },
   header: {
     flexDirection: 'row',
@@ -77,15 +78,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   talentDescriptionContainer: {
-    maxWidth: 50,  
-    overflow: 'hidden',
+    marginTop: 5, 
+    paddingHorizontal: 10,
   },
   talent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'column', 
     marginBottom: 10,
-  },  
+    alignItems: 'center',
+  },
   talentName: {
     fontSize: 15,
     fontWeight: 'bold',
@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
+    marginBottom: 10,
   },
   weakResIcon: {
     width: 20,
@@ -120,5 +121,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+export const getDynamicStyles = (types) => {
+  const shadowColor = types[0].color;
+
+  return StyleSheet.create({
+    card: {
+      ...styles.card,
+      shadowColor: shadowColor,
+    },
+  });
+};
 
 export default styles;
