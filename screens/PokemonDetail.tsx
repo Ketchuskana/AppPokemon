@@ -2,56 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import FetchTalentDescription from '../components/FetchTalentDescription';
 import styles, { getDynamicStyles } from '../components/StyleDetail';
+import { typeColors, typeIcons } from '../components/pokemonTypes'; 
+
 
 type PokemonDetailProps = {
   pokemonName: string;
   onBack: () => void;
-};
-
-export const typeColors: { [key: string]: string } = {
-  fire: '#FFA726',
-  grass: '#66BB6A',
-  water: '#42A5F5',
-  normal: '#A8A77A',
-  bug: '#A6B91A',
-  flying: '#A98FF3',
-  rock: '#B6A136',
-  electric: '#F8D030',
-  poison: '#A33EA1',
-  ground: '#E2BF65',
-  fighting: '#C22E28',
-  psychic: '#F95587',
-  steel: '#B7B7CE',
-  ice: '#96D9D6',
-  ghost: '#735797',
-  dragon: '#6F35FC',
-  dark: '#705746',
-  fairy: '#D685AD',
-  shadow: '#5A5A5A',
-  unknown: '#BDBDBD',
-};
-
-const typeIcons: { [key: string]: any } = {
-  fire: require('../assets/image/feu.png'),
-  grass: require('../assets/image/feuille.png'),
-  water: require('../assets/image/eau.png'),
-  normal: require('../assets/image/swords.png'),
-  bug: require('../assets/image/insecte.png'),
-  flying: require('../assets/image/ailes.png'),
-  rock: require('../assets/image/pierre.png'),
-  electric: require('../assets/image/éclaire.png'),
-  poison: require('../assets/image/poison.png'),
-  ground: require('../assets/image/soil.png'),
-  fighting: require('../assets/image/fighting.png'),
-  psychic: require('../assets/image/psychic.png'),
-  steel: require('../assets/image/steel.png'),
-  ice: require('../assets/image/ice.png'),
-  ghost: require('../assets/image/ghost.png'),
-  dragon: require('../assets/image/dragon.png'),
-  dark: require('../assets/image/dark.png'),
-  fairy: require('../assets/image/fairy.png'),
-  // shadow: require('../assets/image/shadow.png'),
-  // unknown: require('../assets/image/unknown.png'),
 };
 
 const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) => {
@@ -71,11 +27,11 @@ const PokemonDetail: React.FC<PokemonDetailProps> = ({ pokemonName, onBack }) =>
       })
       .then(data => {
         setPokemonDetail(data);
-        const speciesUrl = data.species.url;
+        const speciesUrl: string = data.species.url;
         fetch(speciesUrl)
           .then(response => response.json())
           .then(speciesData => {
-            const evolutionChainUrl = speciesData.evolution_chain.url;
+            const evolutionChainUrl: string = speciesData.evolution_chain.url;
             fetch(evolutionChainUrl)
               .then(response => response.json())
               .then(evolutionChainData => {

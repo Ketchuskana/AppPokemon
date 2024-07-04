@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Image } from 'react-native';
-import styles from '../components/StyleList'; 
-import { typeColors } from './PokemonDetail';
+import styles from '../components/StyleList';
+import { typeColors } from '../components/pokemonTypes';
 
 type PokemonListProps = {
   onPokemonClick: (pokemonName: string) => void;

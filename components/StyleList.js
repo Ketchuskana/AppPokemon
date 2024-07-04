@@ -1,5 +1,28 @@
 import { StyleSheet } from 'react-native';
 
+const typeColors = {
+  fire: '#FFA726',
+  grass: '#66BB6A',
+  water: '#42A5F5',
+  normal: '#A8A77A',
+  bug: '#A6B91A',
+  flying: '#A98FF3',
+  rock: '#B6A136',
+  electric: '#F8D030',
+  poison: '#A33EA1',
+  ground: '#E2BF65',
+  fighting: '#C22E28',
+  psychic: '#F95587',
+  steel: '#B7B7CE',
+  ice: '#96D9D6',
+  ghost: '#735797',
+  dragon: '#6F35FC',
+  dark: '#705746',
+  fairy: '#D685AD',
+  shadow: '#5A5A5A',
+  unknown: '#BDBDBD',
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
