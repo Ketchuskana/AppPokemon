@@ -130,8 +130,9 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
       </View>
 
       <View style={styles.filtersContainer}>
+      <Text style={styles.sortButtonText2}>Trier par : </Text>
         <TouchableOpacity onPress={handleSortAZ} style={styles.sortButton}>
-          <Text style={styles.sortButtonText}>Trier par A-Z</Text>
+          <Text style={styles.sortButtonText}>Ordre alphabétique</Text>
         </TouchableOpacity>
       </View>
 

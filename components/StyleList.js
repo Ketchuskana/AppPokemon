@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   sortButton: {
     backgroundColor: '#FFCC80',
-    paddingVertical: 8,
+    paddingVertical: 5,
     paddingHorizontal: 12,
     borderRadius: 8,
   },
@@ -82,6 +82,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333333',
+  },
+  sortButtonText2: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333333',
+    marginTop: 4,
   },
 
 });
