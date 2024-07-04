@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
-import styles, { getDynamicStyles } from '../components/StyleList';
-import { typeColors } from '../components/pokemonTypes';
+import styles from '../components/StyleList';
 import useSWR from 'swr';
 
 // Définition des types pour les props et les données Pokémon
@@ -36,7 +35,6 @@ const fetcher = async (url) => {
 
 const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [pokemonDetails, setPokemonDetails] = useState<Record<string, PokemonDetails>>({});
   const [offset, setOffset] = useState(0);
   const limit = 21;
