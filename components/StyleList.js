@@ -82,6 +82,42 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 10,
+  },
+  filtersContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  sortButton: {
+    backgroundColor: '#FFCC80',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  sortButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  // picker: {
+  //   width: 150,
+  //   height: 40,
+  //   borderWidth: 1,
+  //   borderColor: '#CCCCCC',
+  //   borderRadius: 8,
+  // },
 });
 
 export default styles;
