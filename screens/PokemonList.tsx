@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Image } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
 import styles from '../components/StyleList';
 import { typeColors } from '../components/pokemonTypes';
 
@@ -12,8 +12,8 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
   const [pokemonList, setPokemonList] = useState<{ name: string, url: string }[]>([]);
   const [filteredPokemonList, setFilteredPokemonList] = useState<{ name: string, url: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // État pour le tri
-  const [selectedType, setSelectedType] = useState<string | null>(null); // État pour le type sélectionné
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); 
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')
@@ -75,7 +75,6 @@ const PokemonList: React.FC<PokemonListProps> = ({ onPokemonClick }) => {
 
     if (selectedType) {
       filteredList = filteredList.filter(pokemon =>
-        // Logique pour vérifier si le Pokémon appartient au type sélectionné
         pokemon.name.toLowerCase().includes(selectedType.toLowerCase())
       );
     }
