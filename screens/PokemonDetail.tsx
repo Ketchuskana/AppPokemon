@@ -4,6 +4,8 @@ import FetchTalentDescription from '../components/FetchTalentDescription';
 import styles, { getDynamicStyles } from '../components/StyleDetail';
 import { typeColors, typeIcons } from '../components/pokemonTypes';
 
+
+
 type PokemonDetailProps = {
   pokemonName: string;
   onBack: () => void;
