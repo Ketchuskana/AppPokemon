@@ -8,7 +8,7 @@ type PokemonDetailProps = {
   onBack: () => void;
 };
 
-const typeColors: { [key: string]: string } = {
+export const typeColors: { [key: string]: string } = {
   fire: '#FFA726',
   grass: '#66BB6A',
   water: '#42A5F5',
